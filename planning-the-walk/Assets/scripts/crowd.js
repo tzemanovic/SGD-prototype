@@ -1,9 +1,16 @@
 ﻿#pragma strict
 
-var speed : float = 10.0f;
-var direction : Direction = Direction.East;
+var speed: float = 10.0f;
+var direction: Direction = Direction.East;
+var maxCrossRoadDistanceToTurn = 5.0f;
 
 private var rb: Rigidbody;
+private var north: boolean = false;
+private var east: boolean = false;
+private var south: boolean = false;
+private var west: boolean = false;
+private var isOnCrossRoad: boolean = false;
+private var crossRoadPos: Vector3;
 
 enum Direction{North, East, South, West}
 
@@ -11,36 +18,101 @@ function Start () {
 	rb = GetComponent.<Rigidbody>();
 }
 
+function ChangeDirection (newDirection: Direction)
+{
+	if (isOnCrossRoad)
+	{
+		//Debug.Log(Vector3.Distance(this.transform.position, crossRoadPos));
+		if (Vector3.Distance(this.transform.position, crossRoadPos) <= maxCrossRoadDistanceToTurn)
+		{
+			direction = newDirection;
+		}
+	}
+	else
+	{
+		direction = newDirection;
+	}
+}
+
+function Move (allowed: boolean, vel: Vector3)
+{
+	if (allowed)
+	{
+		Debug.Log("east");
+		rb.velocity = vel;		
+	}
+	else
+	{
+		Debug.Log("no east");
+		if (isOnCrossRoad && Vector3.Distance(this.transform.position, crossRoadPos) <= maxCrossRoadDistanceToTurn)
+		{
+			rb.velocity = Vector3(0,0,0);
+		}
+	}
+}
+
 function Update () {
-	if (Input.GetKey (KeyCode.UpArrow) || Input.GetKey (KeyCode.W))
+	Debug.Log("Dir " + direction + ", N " + north + ", E " + east + ", S " + south + ", W " + west);
+		Debug.Log(rb.velocity);
+	// crowd controls
+	if (north && (Input.GetKey (KeyCode.UpArrow) || Input.GetKey (KeyCode.W)))
 	{
-		direction = Direction.North;
+		ChangeDirection (Direction.North);
 	}
-	if (Input.GetKey (KeyCode.DownArrow) || Input.GetKey (KeyCode.S))
+	if (south && (Input.GetKey (KeyCode.DownArrow) || Input.GetKey (KeyCode.S)))
 	{
-		direction = Direction.South;
+		ChangeDirection (Direction.South);
 	}
-	if (Input.GetKey (KeyCode.LeftArrow) || Input.GetKey (KeyCode.A))
+	if (west && (Input.GetKey (KeyCode.LeftArrow) || Input.GetKey (KeyCode.A)))
 	{
-		direction = Direction.West;
+		ChangeDirection (Direction.West);
 	}
-	if (Input.GetKey (KeyCode.RightArrow) || Input.GetKey (KeyCode.D))
+	if (east && (Input.GetKey (KeyCode.RightArrow) || Input.GetKey (KeyCode.D)))
 	{
-		direction = Direction.East;
+		ChangeDirection (Direction.East);
 	}
+	// change rigidBody's velocity depending on the direction
 	switch(direction)
 	{
 		case Direction.North:
-		rb.velocity = Vector3(0,0,speed);
+		Move (north, Vector3(0,0,speed));
 		break;
 		case Direction.South:
-		rb.velocity = Vector3(0,0,-speed);
+		Move (south, Vector3(0,0,-speed));
 		break;
 		case Direction.West:
-		rb.velocity = Vector3(-speed,0,0);
+		Move (west, Vector3(-speed,0,0));
 		break;
 		case Direction.East:
-		rb.velocity = Vector3(speed,0,0);
+		Move (east, Vector3(speed,0,0));
 		break;
 	}
+}
+
+function OnTriggerEnter(other: Collider) {
+	// get the road the crowd is standing on
+	var road: Road = other.gameObject.GetComponent.<Road>();
+	// get the allowed directions on the road
+	north = road.north;
+	south = road.south;
+	west = road.west;
+	east = road.east;
+	var roadScale = other.transform.localScale;
+	if (roadScale.x == roadScale.z)
+	{
+		isOnCrossRoad = true;
+		crossRoadPos = other.transform.position;
+	}
+	else
+	{
+		isOnCrossRoad = false;
+	}
+//	if (roadScale.x > roadScale.z)
+//	{
+//		transform.position.z = other.transform.position.z;
+//	}
+//	else if (roadScale.x < roadScale.z)
+//	{
+//		transform.position.x = other.transform.position.x;
+//	}
 }
