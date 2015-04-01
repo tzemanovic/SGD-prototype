@@ -1,9 +1,12 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\Crowd.js">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\Game.js">
     <Files>
-      <File FileName="Assets\scripts\Road.js" Line="3" Column="35" />
-      <File FileName="Assets\scripts\Crowd.js" Line="50" Column="4" />
+      <File FileName="Assets\shaders\diffuse-culloff.shader" Line="11" Column="10" />
+      <File FileName="Assets\scripts\Crowd.js" Line="237" Column="35" />
+      <File FileName="Assets\scripts\Road.js" Line="9" Column="37" />
+      <File FileName="Assets\scripts\Game.js" Line="20" Column="62" />
+      <File FileName="Assets\scripts\MinimapScript.js" Line="10" Column="51" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
